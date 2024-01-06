@@ -2,10 +2,11 @@ import { Vector2 } from 'three';
 import { PathLine } from '@/shared/PathLine';
 import { SceneConnector } from '@/entities/SceneConnector';
 import { House } from '@/shared/House';
-import { Graph } from '@/shared/Graph';
+import { Graph, Node } from '@/shared/Graph';
 
 export class PathPainter {
   private pathLineFrom: PathLine | null = null;
+  private houseFrom: House | null = null;
 
   housePathGraph = new Graph();
 
@@ -55,18 +56,30 @@ export class PathPainter {
   };
 
   private finishMountPath(house: House) {
-    if (!this.pathLineFrom) throw new Error('Path did not started');
+    if (!this.pathLineFrom || !this.houseFrom) throw new Error('Path did not started');
 
     const fromPoint = this.pathLineFrom.userData.fromPoint as [number, number, number];
     const toPoint = [house.mesh.position.x, 0, house.mesh.position.z] as [number, number, number];
 
     this.pathLineFrom.setFromTo(fromPoint, toPoint);
 
+    const houseFrom = this.houseFrom;
+    const houseTo = house;
+
+    const nodeMap = this.housePathGraph.map;
+
+    const nodeFrom = nodeMap.get(houseFrom.id) || new Node(houseFrom.id);
+    const nodeTo = nodeMap.get(houseTo.id) || new Node(houseTo.id);
+
+    this.housePathGraph.addChildren(nodeFrom, nodeTo);
+
     this.pathLineFrom = null;
+    this.houseFrom = null;
   }
 
   private startMountPathFrom(house: House) {
     this.pathLineFrom = new PathLine();
+    this.houseFrom = house;
     this.pathLineFrom.userData.fromPoint = [house.mesh.position.x, 0, house.mesh.position.z];
     this.pathLineFrom.setFromTo(
       [house.mesh.position.x, 0, house.mesh.position.z],
