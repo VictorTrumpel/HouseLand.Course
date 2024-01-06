@@ -1,0 +1,16 @@
+.houses-menu {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  padding: 0;
+  margin: 0;
+  width: 350px;
+}
+
+.houses-menu .ant-btn {
+  margin-right: 10px;
+}
+
+.houses-menu .ant-btn:nth-last-child(1) {
+  margin-right: 0;
+}
