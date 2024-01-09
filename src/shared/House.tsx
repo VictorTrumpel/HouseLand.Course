@@ -3,24 +3,34 @@ import { v4 as uuidv4 } from 'uuid';
 import { createRoot } from 'react-dom/client';
 import { HouseLabel } from '@/shared/HouseLabel/HouseLabel';
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer';
+import { assetsConfig } from '@/constants/assetsConfig';
 
 export class House {
   readonly mesh: Group;
   readonly id: string;
+  readonly config: (typeof assetsConfig)[number];
+
+  name = '';
 
   isMount: boolean = false;
 
   onSaveHouse: () => void = () => null;
 
-  constructor(mesh: Group) {
+  constructor(mesh: Group, assetConfig: (typeof assetsConfig)[number], id?: string) {
     this.mesh = mesh;
 
-    this.id = uuidv4();
+    this.id = id || uuidv4();
+
+    this.config = assetConfig;
 
     this.attachMeshes();
 
-    this.createHouseLabel();
+    // this.createHouseLabel();
   }
+
+  private handleChangeHouseName = (name: string) => {
+    this.name = name;
+  };
 
   saveHouse() {
     this.isMount = true;
@@ -40,12 +50,19 @@ export class House {
     this.mesh.position.copy(vector);
   }
 
-  private createHouseLabel() {
+  createHouseLabel() {
     const labelContainer = document.createElement('div');
 
     const root = createRoot(labelContainer);
 
-    root.render(<HouseLabel isMount={this.isMount} onSave={this.saveHouse.bind(this)} />);
+    root.render(
+      <HouseLabel
+        isMount={this.isMount}
+        onSave={this.saveHouse.bind(this)}
+        defaultName={this.name}
+        onChangeName={this.handleChangeHouseName}
+      />
+    );
 
     const label = new CSS2DObject(labelContainer);
 

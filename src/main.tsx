@@ -4,23 +4,28 @@ import { MainFlowScene } from './scene/MainFlowScene';
 import { HouseMenu } from './feature/HouseMenu/HouseMenu';
 import { createRoot } from 'react-dom/client';
 import './index.css';
+import { IndexDB } from '../indexDB';
 
-const scene = new InitScene();
-scene.start();
+const indexDb = new IndexDB();
 
-// @ts-ignore
-window.scene = scene;
+indexDb.onSuccessOpened = async () => {
+  const scene = new InitScene();
+  scene.start();
 
-const assetScene = new LoadAssetsScene();
-assetScene.start();
+  // @ts-ignore
+  window.scene = scene;
 
-const mainFlowScene = new MainFlowScene(scene, assetScene.assetMap);
-mainFlowScene.start();
+  const assetScene = new LoadAssetsScene();
+  await assetScene.start();
 
-const root = createRoot(document.getElementById('root')!);
+  const mainFlowScene = new MainFlowScene(scene, assetScene.assetMap);
+  mainFlowScene.start();
 
-root.render(
-  <>
-    <HouseMenu scene={mainFlowScene} />
-  </>
-);
+  const root = createRoot(document.getElementById('root')!);
+
+  root.render(
+    <>
+      <HouseMenu scene={mainFlowScene} />
+    </>
+  );
+};
