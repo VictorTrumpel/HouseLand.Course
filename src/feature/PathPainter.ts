@@ -61,6 +61,11 @@ export class PathPainter {
     window.removeEventListener('pointermove', this.handleMouseMove);
   };
 
+  highLightPath(houseFromId: string, houseToId: string, color: 0x635c5a | 0x4096ff) {
+    const path = this.pathsMap.getPath(houseFromId, houseToId);
+    path?.setColor(color);
+  }
+
   private finishMountPath(house: House) {
     if (!this.pathLineFrom || !this.houseFrom) throw new Error('Path did not started');
 
