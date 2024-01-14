@@ -12,7 +12,7 @@ export class MainFlowScene {
   private raycaster: Raycaster = new Raycaster();
 
   private housePainter: HousePainter | null = null;
-  private pathPainter: PathPainter | null = null;
+  pathPainter: PathPainter | null = null;
 
   private sceneConnector = new SceneConnector();
 
