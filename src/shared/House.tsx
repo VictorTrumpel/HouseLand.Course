@@ -10,6 +10,8 @@ export class House {
   readonly id: string;
   readonly config: (typeof assetsConfig)[number];
 
+  private houseLabel: CSS2DObject | null = null;
+
   name = '';
 
   isMount: boolean = false;
@@ -24,8 +26,6 @@ export class House {
     this.config = assetConfig;
 
     this.attachMeshes();
-
-    // this.createHouseLabel();
   }
 
   private handleChangeHouseName = (name: string) => {
@@ -50,6 +50,10 @@ export class House {
     this.mesh.position.copy(vector);
   }
 
+  removeHouseLabel() {
+    if (this.houseLabel) this.mesh.remove(this.houseLabel);
+  }
+
   createHouseLabel() {
     const labelContainer = document.createElement('div');
 
@@ -64,9 +68,13 @@ export class House {
       />
     );
 
-    const label = new CSS2DObject(labelContainer);
+    this.houseLabel = new CSS2DObject(labelContainer);
 
-    this.mesh.add(label);
+    this.houseLabel.position.x = this.config.labelPosition[0];
+    this.houseLabel.position.y = this.config.labelPosition[1];
+    this.houseLabel.position.z = this.config.labelPosition[2];
+
+    this.mesh.add(this.houseLabel);
   }
 
   private attachMeshes() {

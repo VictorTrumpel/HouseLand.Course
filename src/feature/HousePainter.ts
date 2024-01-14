@@ -18,6 +18,15 @@ export class HousePainter {
     this.mountHouseFromIndexDb();
   }
 
+  private handleKeyDown = (event: KeyboardEvent) => {
+    if (event.key === 'Escape' && this.draftHouse) {
+      this.draftHouse.removeHouseLabel();
+      this.sceneConnector.removeFromScene?.(this.draftHouse.mesh);
+      this.draftHouse = null;
+    }
+    window.removeEventListener('keydown', this.handleKeyDown);
+  };
+
   private handleWindowDbClick = (e: MouseEvent) => {
     const pointer = this.sceneConnector.getPointerPosition?.(e);
 
@@ -50,6 +59,8 @@ export class HousePainter {
     this.sceneConnector.addToScene?.(house.mesh);
 
     house.createHouseLabel();
+
+    window.addEventListener('keydown', this.handleKeyDown);
   }
 
   saveHouse(house: House) {
