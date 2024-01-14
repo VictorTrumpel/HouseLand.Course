@@ -8,6 +8,8 @@ export class HousePainter {
   private indexDB = new IndexDB();
   private draftHouse: House | null = null;
 
+  housesMap = new Map<string, House>();
+
   constructor(private sceneConnector: SceneConnector, private assetMap: Map<string, GLTF>) {
     this.assetMap = assetMap;
 
@@ -54,6 +56,8 @@ export class HousePainter {
     house.setOpacity(1);
     house.isMount = true;
 
+    this.housesMap.set(house.id, house);
+
     this.indexDB.saveHouseInfo({
       id: house.id,
       positionX: house.mesh.position.x,
@@ -90,6 +94,8 @@ export class HousePainter {
       house.isMount = true;
 
       house.createHouseLabel();
+
+      this.housesMap.set(house.id, house);
     }
   }
 }

@@ -7,27 +7,33 @@ import { createPathMapFromPathMatrix } from './util/createPathMapFromPathMatrix'
 import { PathTree } from './ui/PathTree';
 import cn from 'classnames';
 import './FindPathMenu.css';
+import { House } from '@/shared/House';
 
 interface PathPainterFeature {
   housePathGraph: Graph;
 }
 
+interface HousePainterFeature {
+  housesMap: Map<string, House>;
+}
+
 type PropsType = {
   pathPainter: PathPainterFeature | null;
-  db: IndexDB;
+  housePainter: HousePainterFeature | null;
 };
 
-export const FindPathMenu = ({ pathPainter, db }: PropsType) => {
+export const FindPathMenu = ({ pathPainter, housePainter }: PropsType) => {
   const [pathsMap, setPathsMap] = useState<Map<string, HouseNode[]>>(new Map());
   const [findError, setFindError] = useState('');
   const [activePathId, setActivePathId] = useState('');
 
   const handleSearchPath = async (values: { from: string; to: string }) => {
     const housePathGraph = pathPainter?.housePathGraph;
+    const housesMap = housePainter?.housesMap;
 
-    if (!housePathGraph) return;
+    if (!housePathGraph || !housesMap) return;
 
-    const allHousesInfo = await db.getAllHousesInfo();
+    const allHousesInfo = [...housesMap.values()];
 
     const { nodeFromId, nodeToId } = getIdsOfPathNodes(values.from, values.to, allHousesInfo);
 
@@ -51,7 +57,7 @@ export const FindPathMenu = ({ pathPainter, db }: PropsType) => {
     setFindError(possiblePathMatrix.length === 0 ? 'Маршрут не найден' : '');
   };
 
-  if (!pathPainter) return <></>;
+  if (!pathPainter || !housePainter) return <></>;
 
   return (
     <Card rootClassName='find-path-container' title='Найти маршрут'>
@@ -88,7 +94,7 @@ export const FindPathMenu = ({ pathPainter, db }: PropsType) => {
               key={pathId}
               onClick={() => null}
               className={cn('path-container', { active: pathId === activePathId })}
-              description={<PathTree path={path} housesMap={pathPainter.housePathGraph.map} />}
+              description={<PathTree path={path} housesMap={housePainter.housesMap} />}
             />
           ))}
         </div>

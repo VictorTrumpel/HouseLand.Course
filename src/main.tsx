@@ -27,7 +27,10 @@ indexDb.onSuccessOpened = async () => {
   root.render(
     <>
       <HouseMenu scene={mainFlowScene} />
-      <FindPathMenu pathPainter={mainFlowScene.pathPainter} db={indexDb} />
+      <FindPathMenu
+        pathPainter={mainFlowScene.pathPainter}
+        housePainter={mainFlowScene.housePainter}
+      />
     </>
   );
 };

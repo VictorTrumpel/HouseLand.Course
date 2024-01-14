@@ -1,16 +1,16 @@
-import { HousesTableCols } from './../../../../indexDB';
+import { House } from '@/shared/House';
 
 export const getIdsOfPathNodes = (
   houseNameFrom: string,
   houseNameTo: string,
-  housesInfo: HousesTableCols[]
+  housesInfo: House[]
 ) => {
   return housesInfo.reduce(
     (nodeFromToIds, info) => {
-      const { houseName, id } = info;
+      const { name, id } = info;
 
-      const isHouseFrom = houseName === houseNameFrom;
-      const isHouseTo = houseName === houseNameTo;
+      const isHouseFrom = name === houseNameFrom;
+      const isHouseTo = name === houseNameTo;
 
       if (isHouseFrom) {
         nodeFromToIds.nodeFromId = id;
