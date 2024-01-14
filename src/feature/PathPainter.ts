@@ -1,3 +1,4 @@
+import { IndexDB, HousesTableCols } from './../../indexDB';
 import { Vector2 } from 'three';
 import { PathLine } from '@/shared/PathLine';
 import { SceneConnector } from '@/entities/SceneConnector';
@@ -7,11 +8,14 @@ import { Graph, Node } from '@/shared/Graph';
 export class PathPainter {
   private pathLineFrom: PathLine | null = null;
   private houseFrom: House | null = null;
+  private indexDb = new IndexDB();
 
   housePathGraph = new Graph();
 
   constructor(private sceneConnector: SceneConnector) {
     window.addEventListener('dblclick', this.handleWindowDbClick);
+
+    this.mountPathsFromIndexDb();
   }
 
   private handleKeyDown = (event: KeyboardEvent) => {
@@ -75,6 +79,8 @@ export class PathPainter {
 
     this.pathLineFrom = null;
     this.houseFrom = null;
+
+    this.indexDb.saveHousesGraph(this.housePathGraph);
   }
 
   private startMountPathFrom(house: House) {
@@ -86,6 +92,56 @@ export class PathPainter {
       [house.mesh.position.x, 0, house.mesh.position.z]
     );
     this.sceneConnector.addToScene?.(this.pathLineFrom);
+  }
+
+  private async mountPathsFromIndexDb() {
+    const housesGraph = await this.indexDb.getHousesGraph();
+    const allHousesOnScene = await this.indexDb.getAllHousesInfo();
+
+    const housesMap = new Map<string, HousesTableCols>();
+
+    allHousesOnScene.forEach((house) => housesMap.set(house.id, house));
+
+    if (!housesGraph) return;
+
+    this.housePathGraph = new Graph(housesGraph.map);
+
+    const graph = this.housePathGraph.map;
+
+    const queue = [...graph.values()];
+
+    const visitedNodes = new Set<string>();
+
+    while (queue.length) {
+      const node = queue.pop();
+
+      if (node === undefined) break;
+
+      if (visitedNodes.has(node.id)) continue;
+
+      visitedNodes.add(node.id);
+
+      const parentHouse = housesMap.get(node.id);
+
+      if (!parentHouse) continue;
+
+      for (const childNode of node.children) {
+        const childHouse = housesMap.get(childNode.id);
+
+        if (!childHouse || visitedNodes.has(childNode.id)) continue;
+
+        const path = new PathLine();
+
+        path.setFromTo(
+          [parentHouse.positionX, 0, parentHouse.positionZ],
+          [childHouse.positionX, 0, childHouse.positionZ]
+        );
+
+        this.sceneConnector.addToScene?.(path);
+      }
+
+      queue.push(...node.children);
+    }
   }
 
   private aimPathLine(pointer: Vector2) {

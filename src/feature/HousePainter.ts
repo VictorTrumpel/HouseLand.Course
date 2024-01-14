@@ -78,7 +78,7 @@ export class HousePainter {
     const houseInfo = await this.indexDB.getAllHousesInfo();
 
     for (const info of houseInfo) {
-      const house = this.createHouseByAssetTitle(info.assetTitle)!;
+      const house = this.createHouseByAssetTitle(info.assetTitle, info.id)!;
 
       house.name = info.houseName;
 
