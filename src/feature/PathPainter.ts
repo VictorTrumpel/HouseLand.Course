@@ -4,12 +4,14 @@ import { PathLine } from '@/shared/PathLine';
 import { SceneConnector } from '@/entities/SceneConnector';
 import { House } from '@/shared/House';
 import { Graph, Node } from '@/shared/Graph';
+import { PathsMap } from '@/entities/PathsMap';
 
 export class PathPainter {
   private pathLineFrom: PathLine | null = null;
   private houseFrom: House | null = null;
   private indexDb = new IndexDB();
 
+  pathsMap = new PathsMap();
   housePathGraph = new Graph();
 
   constructor(private sceneConnector: SceneConnector) {
@@ -70,12 +72,18 @@ export class PathPainter {
     const houseFrom = this.houseFrom;
     const houseTo = house;
 
+    if (this.pathsMap.hasPath(houseFrom.id, houseTo.id)) {
+      this.sceneConnector.removeFromScene?.(this.pathLineFrom);
+      return;
+    }
+
     const nodeMap = this.housePathGraph.map;
 
     const nodeFrom = nodeMap.get(houseFrom.id) || new Node(houseFrom.id);
     const nodeTo = nodeMap.get(houseTo.id) || new Node(houseTo.id);
 
     this.housePathGraph.addChildren(nodeFrom, nodeTo);
+    this.pathsMap.setPathToPathsMap(nodeFrom.id, nodeTo.id, this.pathLineFrom);
 
     this.pathLineFrom = null;
     this.houseFrom = null;
@@ -136,6 +144,8 @@ export class PathPainter {
           [parentHouse.positionX, 0, parentHouse.positionZ],
           [childHouse.positionX, 0, childHouse.positionZ]
         );
+
+        this.pathsMap.setPathToPathsMap(parentHouse.id, childHouse.id, path);
 
         this.sceneConnector.addToScene?.(path);
       }
