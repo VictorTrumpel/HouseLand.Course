@@ -1,4 +1,27 @@
 .house-label {
+  width: 200px;
   display: flex;
   flex-direction: column;
+  justify-content: center;
+}
+
+.input-house-address {
+  margin-bottom: 10px;
+}
+
+.input-house-address-container input.ant-input-status-error {
+  margin-bottom: 0;
+}
+
+.input-house-address-container .ant-input-affix-wrapper-status-error {
+  margin-bottom: 0;
+}
+
+.input-house-address .ant-input-disabled {
+  text-align: center;
+  color: black;
+}
+
+.input-house-address-container {
+  margin-bottom: 0;
 }

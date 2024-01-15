@@ -102,18 +102,6 @@ export class HousePainter {
     this.handleClickArmOfDraftHouse();
   };
 
-  private handleWindowDbClick = (e: MouseEvent) => {
-    const pointer = this.sceneConnector.getPointerPosition?.(e);
-
-    if (!pointer) return;
-
-    const intersect = this.sceneConnector.getIntersectWithGround?.(pointer);
-
-    if (!intersect) return;
-
-    this.draftHouse?.moveHouseTo(intersect.point);
-  };
-
   private handleSaveHouse = () => {
     if (!this.draftHouse) return;
     this.saveHouse(this.draftHouse);
