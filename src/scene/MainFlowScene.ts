@@ -1,3 +1,4 @@
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
 import { Raycaster, Vector2, Object3D, Group, Mesh, Event } from 'three';
 import { IActionScene } from './IActionScene';
@@ -25,6 +26,9 @@ export class MainFlowScene {
     this.sceneConnector.getIntersectWithScene = this.getIntersectWithScene.bind(this);
     this.sceneConnector.addToScene = this.addToScene.bind(this);
     this.sceneConnector.removeFromScene = this.removeFromScene.bind(this);
+    this.sceneConnector.getIntersectWithSprite = this.getIntersectWithSprite.bind(this);
+    this.sceneConnector.disableOrbitControl = this.disableOrbitControl.bind(this);
+    this.sceneConnector.enableOrbitControl = this.enableOrbitControl.bind(this);
   }
 
   async start() {
@@ -62,5 +66,21 @@ export class MainFlowScene {
   private getIntersectWithScene(pointer: Vector2) {
     this.raycaster.setFromCamera(pointer, this.actionScene.camera);
     return this.raycaster.intersectObjects(this.actionScene.scene.children, true);
+  }
+
+  private getIntersectWithSprite(pointer: Vector2, sprite: Object3D<Event> | Group | Mesh) {
+    this.raycaster.setFromCamera(pointer, this.actionScene.camera);
+
+    const firstIntersect = this.raycaster.intersectObject(sprite, true)[0];
+
+    return firstIntersect;
+  }
+
+  private enableOrbitControl() {
+    this.actionScene.orbitControls.enabled = true;
+  }
+
+  private disableOrbitControl() {
+    this.actionScene.orbitControls.enabled = false;
   }
 }

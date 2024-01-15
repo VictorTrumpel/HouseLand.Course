@@ -2,6 +2,10 @@ import { Vector2, Intersection, Object3D, Group, Mesh, Event } from 'three';
 
 type GetIntersectWithGround = (pointer: Vector2) => Intersection<Object3D<Event>>;
 type GetIntersectWithScene = (pointer: Vector2) => Intersection<Object3D<Event>>[];
+type GetIntersectWithSprite = (
+  pointer: Vector2,
+  sprite: Object3D<Event> | Group | Mesh
+) => Intersection<Object3D<Event>>;
 type GetPointerPosition = (pointer: PointerEvent | MouseEvent) => Vector2;
 type AddToScene = (element: Object3D<Event> | Group | Mesh) => void;
 
@@ -11,4 +15,7 @@ export class SceneConnector {
   getIntersectWithScene: GetIntersectWithScene | null = null;
   addToScene: AddToScene | null = null;
   removeFromScene: AddToScene | null = null;
+  getIntersectWithSprite: GetIntersectWithSprite | null = null;
+  enableOrbitControl: () => void = () => null;
+  disableOrbitControl: () => void = () => null;
 }

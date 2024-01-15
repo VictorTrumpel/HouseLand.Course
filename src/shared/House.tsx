@@ -1,4 +1,4 @@
-import { Group, Mesh, Vector3 } from 'three';
+import { Group, Mesh, MeshLambertMaterial, SphereGeometry, Vector3 } from 'three';
 import { v4 as uuidv4 } from 'uuid';
 import { createRoot } from 'react-dom/client';
 import { HouseLabel } from '@/shared/HouseLabel/HouseLabel';
@@ -11,6 +11,8 @@ export class House {
   readonly config: (typeof assetsConfig)[number];
 
   private houseLabel: CSS2DObject | null = null;
+
+  houseArm: Mesh | null = null;
 
   name = '';
 
@@ -48,6 +50,22 @@ export class House {
 
   moveHouseTo(vector: Vector3) {
     this.mesh.position.copy(vector);
+  }
+
+  removeHouseArm() {
+    if (this.houseArm) this.mesh.remove(this.houseArm);
+  }
+
+  createHouseArm() {
+    const geometry = new SphereGeometry(1, 16, 16);
+    const material = new MeshLambertMaterial({ color: 0x6794ab });
+
+    this.houseArm = new Mesh(geometry, material);
+    this.houseArm.position.x = this.config.controllerPosition[0];
+    this.houseArm.position.y = this.config.controllerPosition[1];
+    this.houseArm.position.z = this.config.controllerPosition[2];
+
+    this.mesh.add(this.houseArm);
   }
 
   removeHouseLabel() {
